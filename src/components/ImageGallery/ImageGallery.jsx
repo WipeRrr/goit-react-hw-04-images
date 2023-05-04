@@ -4,6 +4,7 @@ import css from './ImageGallery.module.css';
 import ImageGalleryItem from 'components/ImageGalleryItem';
 import Loader from 'components/Loader';
 import Button from 'components/Button';
+import Modal from 'components/Modal';
 const Status = {
   IDLE: 'idle',
   RESOLVED: 'resolved',
@@ -16,6 +17,7 @@ export default class ImageGallery extends Component {
     image: [],
     error: null,
     status: Status.IDLE,
+    showModal: false,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -31,9 +33,16 @@ export default class ImageGallery extends Component {
     }
   }
 
+  toggleModal = () => {
+    this.setState(({ showModal }) => ({ showModal: !showModal }));
+  };
+
+  onImgClick = () => {
+    this.toggleModal();
+  };
+
   render() {
     const { image, error, status } = this.state;
-    console.log(image);
 
     if (status === 'idle') {
       return (
@@ -63,12 +72,20 @@ export default class ImageGallery extends Component {
       return (
         <>
           <ul className={css.ImageGallery}>
-            {image.hits.map(({ id, webformatURL, tags }) => (
-              <ImageGalleryItem key={id} url={webformatURL} tags={tags} />
+            {image.hits.map(({ id, webformatURL, tags, largeImageURL }) => (
+              <ImageGalleryItem
+                key={id}
+                url={webformatURL}
+                tags={tags}
+                largeImageURL={largeImageURL}
+                onClick={this.onImgClick}
+              />
             ))}
           </ul>
-
-          <Button ></Button>
+          {this.state.showModal && (
+            <Modal  toggleModal={this.toggleModal}></Modal>
+          )}
+          <Button></Button>
         </>
       );
     }
