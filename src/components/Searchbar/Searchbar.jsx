@@ -2,7 +2,7 @@ import { toast } from 'react-toastify';
 import css from './Searchbar.module.css';
 import { Component } from 'react';
 import React from 'react';
-
+import { resetPage } from 'components/services/image-api';
 import 'react-toastify/dist/ReactToastify.css';
 
 class Searchbar extends Component {
@@ -22,6 +22,7 @@ class Searchbar extends Component {
     }
     this.props.onSubmit(this.state.imageName);
     this.setState({ imageName: '' });
+    resetPage()
   };
 
   render() {
