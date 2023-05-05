@@ -59,7 +59,8 @@ export default class ImageGallery extends Component {
   };
 
  scrollToBottom = () => {
-    scroll.scrollToBottom();
+   
+   scroll.scrollMore(1000);
   }
 
   toggleModal = () => {
