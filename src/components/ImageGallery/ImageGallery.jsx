@@ -18,6 +18,8 @@ export default class ImageGallery extends Component {
     error: null,
     status: Status.IDLE,
     showModal: false,
+    modalImg: '',
+    tags: '',
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -39,6 +41,11 @@ export default class ImageGallery extends Component {
 
   onImgClick = () => {
     this.toggleModal();
+  };
+
+  getLargeImg = (largeImageURL, tags) => {
+    this.toggleModal();
+    this.setState({ modalImg: largeImageURL, tags });
   };
 
   render() {
@@ -77,13 +84,14 @@ export default class ImageGallery extends Component {
                 key={id}
                 url={webformatURL}
                 tags={tags}
-                largeImageURL={largeImageURL}
-                onClick={this.onImgClick}
+                onClick={() => this.getLargeImg(largeImageURL, tags)}
               />
             ))}
           </ul>
           {this.state.showModal && (
-            <Modal  toggleModal={this.toggleModal}></Modal>
+            <Modal toggleModal={this.toggleModal}>
+              <img src={this.state.modalImg} alt={this.state.tags} />
+            </Modal>
           )}
           <Button></Button>
         </>
