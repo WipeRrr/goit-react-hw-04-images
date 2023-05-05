@@ -38,8 +38,6 @@ export default class ImageGallery extends Component {
   }
 
   loadImage = () => {
-    // this.setState({ status: Status.PENDING });
-   
     imageApi
       .fetchImage(this.props.imageName)
       .then(image => {
@@ -49,7 +47,6 @@ export default class ImageGallery extends Component {
         }));
       })
       .catch(error => this.setState({ error, status: Status.REJECTED }));
-     this.scrollOnLoadButton();
   };
 
   toggleModal = () => {
@@ -65,16 +62,8 @@ export default class ImageGallery extends Component {
     this.setState({ modalImg: largeImageURL, tags });
   };
 
-   scrollOnLoadButton = () => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: 'smooth',
-    });
-  };
-
   render() {
     const { image, error, status, modalImg, tags, showModal } = this.state;
-    // console.log(image.hits);
     if (status === 'idle') {
       return (
         <div className={css.idleThumb}>
@@ -117,7 +106,7 @@ export default class ImageGallery extends Component {
               <img src={modalImg} alt={tags} />
             </Modal>
           )}
-          <Button onClick={this.loadImage} ></Button>
+          <Button onClick={this.loadImage}></Button>
         </>
       );
     }
