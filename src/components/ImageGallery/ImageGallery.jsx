@@ -38,7 +38,8 @@ export default class ImageGallery extends Component {
   }
 
   loadImage = () => {
-    this.setState({ status: Status.PENDING });
+    // this.setState({ status: Status.PENDING });
+   
     imageApi
       .fetchImage(this.props.imageName)
       .then(image => {
@@ -48,6 +49,7 @@ export default class ImageGallery extends Component {
         }));
       })
       .catch(error => this.setState({ error, status: Status.REJECTED }));
+     this.scrollOnLoadButton();
   };
 
   toggleModal = () => {
@@ -61,6 +63,13 @@ export default class ImageGallery extends Component {
   getLargeImg = (largeImageURL, tags) => {
     this.toggleModal();
     this.setState({ modalImg: largeImageURL, tags });
+  };
+
+   scrollOnLoadButton = () => {
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: 'smooth',
+    });
   };
 
   render() {
@@ -108,7 +117,7 @@ export default class ImageGallery extends Component {
               <img src={modalImg} alt={tags} />
             </Modal>
           )}
-          <Button onClick={this.loadImage}></Button>
+          <Button onClick={this.loadImage} ></Button>
         </>
       );
     }
