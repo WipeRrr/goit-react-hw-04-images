@@ -55,16 +55,17 @@ export default class ImageGallery extends Component {
         }));
       })
       .catch(error => this.setState({ error, status: Status.REJECTED }));
-    scroll.scrollToBottom();
+    this.scrollToBottom()
   };
+
+ scrollToBottom = () => {
+    scroll.scrollToBottom();
+  }
 
   toggleModal = () => {
     this.setState(({ showModal }) => ({ showModal: !showModal }));
   };
 
-  onImgClick = () => {
-    this.toggleModal();
-  };
 
   getLargeImg = (largeImageURL, tags) => {
     this.toggleModal();
