@@ -4,6 +4,7 @@ import { Component } from 'react';
 import React from 'react';
 import { resetPage } from 'components/services/image-api';
 import 'react-toastify/dist/ReactToastify.css';
+import PropTypes from 'prop-types';
 
 class Searchbar extends Component {
   state = {
@@ -52,4 +53,11 @@ class Searchbar extends Component {
     );
   }
 }
+
+Searchbar.propTypes = {
+  handleFormSubmit: PropTypes.func.isRequired,
+};
+
+
+
 export default Searchbar;

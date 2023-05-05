@@ -1,5 +1,5 @@
 import css from './ImageGalleryItem.module.css';
-
+import PropTypes from 'prop-types';
 export default function ImageGalleryItem({ url, tags, onClick }) {
   return (
     <li className={css.ImageGalleryItem}>
@@ -12,3 +12,10 @@ export default function ImageGalleryItem({ url, tags, onClick }) {
     </li>
   );
 }
+
+
+ImageGalleryItem.propTypes = {
+  url: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired,
+  tags: PropTypes.string.isRequired,
+};

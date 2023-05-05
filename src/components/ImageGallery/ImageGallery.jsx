@@ -1,10 +1,12 @@
 import { Component } from 'react';
+import PropTypes from 'prop-types';
 import imageApi from '../services/image-api';
 import css from './ImageGallery.module.css';
 import ImageGalleryItem from 'components/ImageGalleryItem';
 import Loader from 'components/Loader';
 import Button from 'components/Button';
 import Modal from 'components/Modal';
+import * as Scroll from 'react-scroll';
 const Status = {
   IDLE: 'idle',
   RESOLVED: 'resolved',
@@ -12,7 +14,13 @@ const Status = {
   REJECTED: 'rejected',
 };
 
+const scroll = Scroll.animateScroll;
+
 export default class ImageGallery extends Component {
+  static propTypes = {
+    imageName: PropTypes.string.isRequired,
+  };
+
   state = {
     image: [],
     error: null,
@@ -47,6 +55,7 @@ export default class ImageGallery extends Component {
         }));
       })
       .catch(error => this.setState({ error, status: Status.REJECTED }));
+    scroll.scrollToBottom();
   };
 
   toggleModal = () => {

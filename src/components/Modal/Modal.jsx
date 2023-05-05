@@ -8,6 +8,7 @@ const modalRoot = document.querySelector('#modal-root');
 export default class Modal extends Component {
   static propTypes = {
     toggleModal: PropTypes.func.isRequired,
+    children: PropTypes.element,
   };
 
   state = {};
