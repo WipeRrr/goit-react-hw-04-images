@@ -30,10 +30,25 @@ export default class ImageGallery extends Component {
       this.setState({ status: Status.PENDING });
       imageApi
         .fetchImage(nextName)
-        .then(image => this.setState({ image, status: Status.RESOLVED }))
+        .then(image =>
+          this.setState({ image: image.hits, status: Status.RESOLVED })
+        )
         .catch(error => this.setState({ error, status: Status.REJECTED }));
     }
   }
+
+  loadImage = () => {
+    this.setState({ status: Status.PENDING });
+    imageApi
+      .fetchImage(this.props.imageName)
+      .then(image => {
+        this.setState(prevState => ({
+          image: [...prevState.image, ...image.hits],
+          status: Status.RESOLVED,
+        }));
+      })
+      .catch(error => this.setState({ error, status: Status.REJECTED }));
+  };
 
   toggleModal = () => {
     this.setState(({ showModal }) => ({ showModal: !showModal }));
@@ -49,8 +64,8 @@ export default class ImageGallery extends Component {
   };
 
   render() {
-    const { image, error, status } = this.state;
-
+    const { image, error, status, modalImg, tags, showModal } = this.state;
+    // console.log(image.hits);
     if (status === 'idle') {
       return (
         <div className={css.idleThumb}>
@@ -63,7 +78,7 @@ export default class ImageGallery extends Component {
       return <Loader />;
     }
 
-    if (image.hits.length === 0) {
+    if (image.length === 0) {
       return (
         <h2 className={css.rejectTitle}>
           No image for your request. Please, try again.
@@ -79,7 +94,7 @@ export default class ImageGallery extends Component {
       return (
         <>
           <ul className={css.ImageGallery}>
-            {image.hits.map(({ id, webformatURL, tags, largeImageURL }) => (
+            {image.map(({ id, webformatURL, tags, largeImageURL }) => (
               <ImageGalleryItem
                 key={id}
                 url={webformatURL}
@@ -88,12 +103,12 @@ export default class ImageGallery extends Component {
               />
             ))}
           </ul>
-          {this.state.showModal && (
+          {showModal && (
             <Modal toggleModal={this.toggleModal}>
-              <img src={this.state.modalImg} alt={this.state.tags} />
+              <img src={modalImg} alt={tags} />
             </Modal>
           )}
-          <Button></Button>
+          <Button onClick={this.loadImage}></Button>
         </>
       );
     }
