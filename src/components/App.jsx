@@ -41,17 +41,20 @@ export default class App extends Component {
           this.setState({
             image: image.hits,
             status: Status.RESOLVED,
-            page: prevState.page + 1,
-            totalHits: image.totalHits
+            totalHits: image.totalHits,
+            // page:this.state.page+1
           })
         )
         .catch(error => this.setState({ error, status: Status.REJECTED }));
+    
     }
+      // this.setState({  page: 1 });
   }
 
   loadImage = () => {
+    this.setState({ status: Status.PENDING });
     imageApi
-      .fetchImage(this.state.imageName, this.state.page)
+      .fetchImage(this.state.imageName, this.state.page+1)
       .then(image => {
         this.setState(prevState => ({
           image: [...prevState.image, ...image.hits],
@@ -76,18 +79,19 @@ export default class App extends Component {
     this.setState({ modalImg: largeImageURL, tags });
   };
 
-  handleFormSubmit = imageName => {
-    this.setState({ page: 1 });
-    this.setState({ imageName });
+  handleFormSubmit = (imageName) => {
+      
+    this.setState({ imageName, page: 1 });
+    
   };
 
   render() {
-    const { image, error, status, modalImg, tags, showModal, page, totalHits } =
+    const { image, error, status, modalImg, tags, showModal,  totalHits } =
       this.state;
 
     return (
       <div className="App">
-        <Searchbar onSubmit={this.handleFormSubmit} page={page}></Searchbar>
+        <Searchbar onSubmit={this.handleFormSubmit} ></Searchbar>
 
         {status === 'idle' && (
           <div className="idleThumb">
@@ -113,7 +117,7 @@ export default class App extends Component {
               </Modal>
             )}
 
-            {image.length < totalHits && (
+            {image.length !== totalHits && (
               <Button onClick={this.loadImage}></Button>
             )}
 
@@ -123,13 +127,6 @@ export default class App extends Component {
               </h2>
             )}
 
-            {/* {image.length !== totalHits ? (
-              <Button onClick={this.loadImage}></Button>
-            ) : (
-              <h2 className="rejectTitle">
-                No image for your request. Please, try again.
-              </h2>
-            )} */}
           </>
         )}
       </div>

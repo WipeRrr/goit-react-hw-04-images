@@ -22,6 +22,7 @@ class Searchbar extends Component {
     }
     this.props.onSubmit(this.state.imageName);
     this.setState({ imageName: '' });
+    // this.setState({ page: '' });
   };
 
   render() {
@@ -54,7 +55,7 @@ class Searchbar extends Component {
 
 Searchbar.propTypes = {
   onSubmit: PropTypes.func.isRequired,
-  page: PropTypes.number.isRequired,
+  // page: PropTypes.number.isRequired,
 };
 
 export default Searchbar;

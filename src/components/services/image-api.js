@@ -1,4 +1,4 @@
-function fetchImage(name, page) {
+function fetchImage(name, page=1) {
   const KEY_API = `33763391-fe078dc9f17400c9e34720d71`;
 
   return fetch(
