@@ -2,7 +2,6 @@ import { toast } from 'react-toastify';
 import css from './Searchbar.module.css';
 import { Component } from 'react';
 import React from 'react';
-import { resetPage } from 'components/services/image-api';
 import 'react-toastify/dist/ReactToastify.css';
 import PropTypes from 'prop-types';
 
@@ -23,7 +22,6 @@ class Searchbar extends Component {
     }
     this.props.onSubmit(this.state.imageName);
     this.setState({ imageName: '' });
-    resetPage()
   };
 
   render() {
@@ -55,9 +53,8 @@ class Searchbar extends Component {
 }
 
 Searchbar.propTypes = {
-  handleFormSubmit: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  page: PropTypes.number.isRequired,
 };
-
-
 
 export default Searchbar;

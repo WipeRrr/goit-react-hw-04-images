@@ -12,22 +12,3 @@
 }
 
 
-.rejectTitle{
-  margin: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 200px;
-  color: #3f51b5;
-}
-
-.idleThumb{
-  display: flex;
-  margin: auto;
-  flex-direction: column;
-  align-items: center;
-  color: #3f51b5;
-}
-.idleThumb p{
-  font-size: 30px;
-}
