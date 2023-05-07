@@ -26,38 +26,46 @@ export default class App extends Component {
     modalImg: '',
     tags: '',
     page: 1,
-    totalHits:''
+    totalHits: '',
   };
 
   componentDidUpdate(prevProps, prevState) {
+    const { page } = this.state;
     const prevName = prevState.imageName;
     const nextName = this.state.imageName;
 
     if (prevName !== nextName) {
-      this.setState({ status: Status.PENDING });
-      imageApi
-        .fetchImage(nextName, this.state.page)
-        .then(image =>
-          this.setState({
-            image: image.hits,
-            status: Status.RESOLVED,
-            totalHits: image.totalHits,
-          })
-        )
-        .catch(error => this.setState({ error, status: Status.REJECTED }));
-    
+      this.loadImage();
+    }
+    if (prevState.page !== page && page > 1) {
+      this.loadMoreImage();
     }
   }
 
   loadImage = () => {
+    const { imageName, page } = this.state;
     this.setState({ status: Status.PENDING });
     imageApi
-      .fetchImage(this.state.imageName, this.state.page+1)
+      .fetchImage(imageName, page)
+      .then(image =>
+        this.setState({
+          image: image.hits,
+          status: Status.RESOLVED,
+          totalHits: image.totalHits,
+        })
+      )
+      .catch(error => this.setState({ error, status: Status.REJECTED }));
+  };
+
+  loadMoreImage = () => {
+    const { imageName, page } = this.state;
+    this.setState({ status: Status.PENDING });
+    imageApi
+      .fetchImage(imageName, page)
       .then(image => {
         this.setState(prevState => ({
           image: [...prevState.image, ...image.hits],
           status: Status.RESOLVED,
-          page: prevState.page + 1,
         }));
       })
       .catch(error => this.setState({ error, status: Status.REJECTED }));
@@ -77,19 +85,23 @@ export default class App extends Component {
     this.setState({ modalImg: largeImageURL, tags });
   };
 
-  handleFormSubmit = (imageName) => {
-      
+  handleFormSubmit = imageName => {
     this.setState({ imageName, page: 1 });
-    
+  };
+
+  loadMoreBtn = () => {
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+    }));
   };
 
   render() {
-    const { image, error, status, modalImg, tags, showModal,  totalHits } =
+    const { image, error, status, modalImg, tags, showModal, totalHits } =
       this.state;
 
     return (
       <div className="App">
-        <Searchbar onSubmit={this.handleFormSubmit} ></Searchbar>
+        <Searchbar onSubmit={this.handleFormSubmit}></Searchbar>
 
         {status === 'idle' && (
           <div className="idleThumb">
@@ -105,7 +117,7 @@ export default class App extends Component {
         {status === 'resolved' && (
           <>
             <ImageGallery
-              imageName={this.state.imageName}
+              
               image={image}
               getLargeImg={this.getLargeImg}
             ></ImageGallery>
@@ -116,7 +128,7 @@ export default class App extends Component {
             )}
 
             {image.length !== totalHits && (
-              <Button onClick={this.loadImage}></Button>
+              <Button onClick={this.loadMoreBtn}></Button>
             )}
 
             {image.length === 0 && (
@@ -124,7 +136,6 @@ export default class App extends Component {
                 No image for your request. Please, try again.
               </h2>
             )}
-
           </>
         )}
       </div>

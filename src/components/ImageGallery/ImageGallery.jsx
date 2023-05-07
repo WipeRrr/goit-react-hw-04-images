@@ -5,7 +5,7 @@ import ImageGalleryItem from 'components/ImageGalleryItem';
 
 export default class ImageGallery extends Component {
   static propTypes = {
-    imageName: PropTypes.string.isRequired,
+    // imageName: PropTypes.string.isRequired,
     getLargeImg: PropTypes.func.isRequired,
     image: PropTypes.array.isRequired,
   };
@@ -19,7 +19,7 @@ export default class ImageGallery extends Component {
           {image.map(({ id, webformatURL, tags, largeImageURL }) => (
             <ImageGalleryItem
               key={id}
-              url={webformatURL}
+              url={largeImageURL}
               tags={tags}
               onClick={() => this.props.getLargeImg(largeImageURL, tags)}
             />
