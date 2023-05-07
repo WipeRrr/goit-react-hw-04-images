@@ -42,13 +42,11 @@ export default class App extends Component {
             image: image.hits,
             status: Status.RESOLVED,
             totalHits: image.totalHits,
-            // page:this.state.page+1
           })
         )
         .catch(error => this.setState({ error, status: Status.REJECTED }));
     
     }
-      // this.setState({  page: 1 });
   }
 
   loadImage = () => {
