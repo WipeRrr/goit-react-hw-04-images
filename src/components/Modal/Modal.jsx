@@ -1,43 +1,39 @@
 import css from './Modal.module.css';
-import { Component } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { createPortal } from 'react-dom';
 
 const modalRoot = document.querySelector('#modal-root');
 
-export default class Modal extends Component {
-  static propTypes = {
-    toggleModal: PropTypes.func.isRequired,
-    children: PropTypes.element.isRequired,
-  };
+export default function Modal({ toggleModal, children }) {
+  useEffect(() => {
+    window.addEventListener('keydown', clickEsc);
+    return () => {
+      window.removeEventListener('keydown', clickEsc);
+    };
+  });
 
-  state = {};
-
-  componentDidMount() {
-    window.addEventListener('keydown', this.clickEsc);
-  }
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.clickEsc);
-  }
-
-  clickBackdrop = event => {
-    if (event.target === event.currentTarget) {
-      this.props.toggleModal();
-    }
-  };
-
-  clickEsc = event => {
+  const clickEsc = event => {
     if (event.code === 'Escape') {
-      this.props.toggleModal();
+      toggleModal();
     }
   };
 
-  render() {
-    return createPortal(
-      <div className={css.overlay} onClick={this.clickBackdrop}>
-        <div className={css.modal}>{this.props.children}</div>
-      </div>,
-      modalRoot
-    );
-  }
+  const clickBackdrop = event => {
+    if (event.target === event.currentTarget) {
+      toggleModal();
+    }
+  };
+
+  return createPortal(
+    <div className={css.overlay} onClick={clickBackdrop}>
+      <div className={css.modal}>{children}</div>
+    </div>,
+    modalRoot
+  );
 }
+
+Modal.propTypes = {
+  toggleModal: PropTypes.func.isRequired,
+  children: PropTypes.element.isRequired,
+};

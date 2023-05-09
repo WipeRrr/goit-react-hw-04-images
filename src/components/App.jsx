@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Searchbar from './Searchbar';
 import ImageGallery from './ImageGallery';
 import * as Scroll from 'react-scroll';
@@ -16,129 +16,108 @@ const Status = {
 
 const scroll = Scroll.animateScroll;
 
-export default class App extends Component {
-  state = {
-    imageName: '',
-    image: [],
-    error: null,
-    status: Status.IDLE,
-    showModal: false,
-    modalImg: '',
-    tags: '',
-    page: 1,
-    totalHits: '',
-  };
+export default function App() {
+  const [imageName, SetimageName] = useState('');
+  const [image, SetImage] = useState([]);
+  const [error, SetError] = useState(null);
+  const [status, SetStatus] = useState(Status.IDLE);
+  const [showModal, SetShowModal] = useState(false);
+  const [modalImg, SetmodalImg] = useState({});
+  const [tags, SetTags] = useState('');
+  const [page, SetPage] = useState(1);
+  const [totalHits, SetTotalHits] = useState('');
 
-  componentDidUpdate(prevProps, prevState) {
-    const { page } = this.state;
-    const prevName = prevState.imageName;
-    const nextName = this.state.imageName;
-
-    if (prevName !== nextName) {
-      this.loadImage();
+  useEffect(() => {
+    if (!imageName) {
+      return;
     }
-    if (prevState.page !== page && page > 1) {
-      this.loadMoreImage();
-    }
-  }
-
-  loadImage = () => {
-    const { imageName, page } = this.state;
-    this.setState({ status: Status.PENDING });
-    imageApi
-      .fetchImage(imageName, page)
-      .then(image =>
-        this.setState({
-          image: image.hits,
-          status: Status.RESOLVED,
-          totalHits: image.totalHits,
+    if (page === 1) {
+      SetStatus(Status.PENDING);
+      imageApi
+        .fetchImage(imageName, page)
+        .then(image => {
+          SetImage(image.hits);
+          SetTotalHits(image.totalHits);
+          SetStatus(Status.RESOLVED);
         })
-      )
-      .catch(error => this.setState({ error, status: Status.REJECTED }));
-  };
-
-  loadMoreImage = () => {
-    const { imageName, page } = this.state;
-    this.setState({ status: Status.PENDING });
+        .catch(error => {
+          SetError(error);
+          SetStatus(Status.REJECTED);
+        });
+      return;
+    }
+    SetStatus(Status.PENDING);
     imageApi
       .fetchImage(imageName, page)
       .then(image => {
-        this.setState(prevState => ({
-          image: [...prevState.image, ...image.hits],
-          status: Status.RESOLVED,
-        }));
+        SetImage(prevImage => [...prevImage, ...image.hits]);
+        SetStatus(Status.RESOLVED);
       })
-      .catch(error => this.setState({ error, status: Status.REJECTED }));
-    this.scrollToBottom();
-  };
+      .catch(error => {
+        SetError(error);
+        SetStatus(Status.REJECTED);
+      });
+    scrollToBottom();
+  }, [imageName, page]);
 
-  scrollToBottom = () => {
+  const scrollToBottom = () => {
     scroll.scrollMore(1000);
   };
 
-  toggleModal = () => {
-    this.setState(({ showModal }) => ({ showModal: !showModal }));
+  const toggleModal = () => {
+    SetShowModal(!showModal);
   };
 
-  getLargeImg = (largeImageURL, tags) => {
-    this.toggleModal();
-    this.setState({ modalImg: largeImageURL, tags });
+  const getLargeImg = (largeImageURL, tags) => {
+    toggleModal();
+    SetmodalImg(largeImageURL);
+    SetTags(tags);
   };
 
-  handleFormSubmit = imageName => {
-    this.setState({ imageName, page: 1 });
+  const handleFormSubmit = imageName => {
+    SetimageName(imageName);
+    SetPage(1);
   };
 
-  loadMoreBtn = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
+  const loadMoreBtn = () => {
+    SetPage(prevPage => prevPage + 1);
   };
 
-  render() {
-    const { image, error, status, modalImg, tags, showModal, totalHits } =
-      this.state;
+  return (
+    <div className="App">
+      <Searchbar onSubmit={handleFormSubmit}></Searchbar>
 
-    return (
-      <div className="App">
-        <Searchbar onSubmit={this.handleFormSubmit}></Searchbar>
+      {status === Status.IDLE && (
+        <div className="idleThumb">
+          <p>↑Use search field↑</p>
+          <h1>The gallery is empty 🙁</h1>
+        </div>
+      )}
 
-        {status === 'idle' && (
-          <div className="idleThumb">
-            <p>↑Use search field↑</p>
-            <h1>The gallery is empty 🙁</h1>
-          </div>
-        )}
+      {status === Status.PENDING && <Loader />}
 
-        {status === 'pending' && <Loader />}
+      {status === Status.REJECTED && alert(error.message)}
 
-        {status === 'rejected' && alert(error.message)}
+      {status === Status.RESOLVED && (
+        <>
+          <ImageGallery image={image} getLargeImg={getLargeImg}></ImageGallery>
+          {showModal && (
+            <Modal toggleModal={toggleModal}>
+              <img src={modalImg} alt={tags} />
+            </Modal>
+          )}
 
-        {status === 'resolved' && (
-          <>
-            <ImageGallery
-              
-              image={image}
-              getLargeImg={this.getLargeImg}
-            ></ImageGallery>
-            {showModal && (
-              <Modal toggleModal={this.toggleModal}>
-                <img src={modalImg} alt={tags} />
-              </Modal>
-            )}
+          {image.length !== totalHits && (
+            <Button onClick={loadMoreBtn}></Button>
+          )}
 
-            {image.length !== totalHits && (
-              <Button onClick={this.loadMoreBtn}></Button>
-            )}
-
-            {image.length === 0 && (
-              <h2 className="rejectTitle">
-                No image for your request. Please, try again.
-              </h2>
-            )}
-          </>
-        )}
-      </div>
-    );
-  }
+          {image.length === 0 && (
+            <h2 className="rejectTitle">
+              No image for your request. Please, try again.
+            </h2>
+          )}
+        </>
+      )}
+    </div>
+  );
 }
